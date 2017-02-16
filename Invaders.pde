@@ -1,7 +1,7 @@
 //Global Customisable Declarations //<>//
 final int alienCol = 10;
 final int alienRow = 3;
-final int loadingTime = 4000;
+final int loadingTime = 3000;
 
 //Global Declarations
 PVector fixedPos;
@@ -13,7 +13,7 @@ boolean moveRight = true;
 int aliensLeft = 0;
 int rowMin = 0;
 int rowMax = 0;
-PImage splash;
+PImage splash, background;
 
 //Font
 PFont openSans;
@@ -31,11 +31,12 @@ Alien[][] alien = new Alien[alienCol][alienRow]; //Array
 void setup() {
   size(1000, 800);
   splash = loadImage("img/splash.jpg");
+  background = loadImage("img/background.jpg");
   openSans = loadFont("OpenSansLight-Italic-48.vlw");
 }
 //---------------------------------DRAW----------------------------------
 void draw() {
-  if (millis() < loadingTime){
+  if (millis() < loadingTime) {
     image(splash, 0, 0);
     textFont(openSans, 20);
     double loadTime = millis()/(loadingTime/100);
@@ -43,25 +44,25 @@ void draw() {
     text(loadText, width/2-(textWidth(loadText)/2), height/2 + 100);
     //textFont();
   } else {
-  background(0);
-  
-  switch (screen) {
-  case 0:
-    menuScreen();
-    break;
+    background(0);
 
-  case 1:
-    mainGame();
-    break;
+    switch (screen) {
+    case 0:
+      menuScreen();
+      break;
 
-  case 2:
-    scores();
-    break;
+    case 1:
+      mainGame();
+      break;
 
-  case 3:
-    exit();
-    break;
-  }
+    case 2:
+      scores();
+      break;
+
+    case 3:
+      exit();
+      break;
+    }
   }
 }
 //------------------------------KEY_PRESSED-------------------------------
@@ -113,7 +114,7 @@ void menuScreen() {
 }
 //-------------------------------MAIN_GAME--------------------------------
 void mainGame() {
-
+  image(background, 0, 0);
   //----------------------SETUP-----------------------
   if (setup == true) {
 
@@ -154,7 +155,7 @@ void mainGame() {
         bullet = null;
       } else if (shot.crash == true) {
         bullet = null;
-        alien[shot.i][shot.j] = null;
+        alien[shot.i][shot.j].dying = true;
         score += 10;
       } else {
         bullet.update();
@@ -165,7 +166,7 @@ void mainGame() {
     for (int i=0; i<alienCol; i++) {
       for (int j=0; j<alienRow; j++) {
 
-        if (alien[i][j] != null) { //If Alien at index exists
+        if (alien[i][j] != null && !alien[i][j].dead) { //If Alien at index exists
           alien[i][j].render(fixedPos);
           aliensLeft++; //States the array is not empty
           if (i + 1 < rowMin) { 
@@ -196,6 +197,11 @@ void mainGame() {
             alien[i][j].randomShoot(level); //Generate bullet
           }
         }
+        if (alien[i][j] != null) {
+        if (alien[i][j].dead) {
+          alien[i][j] = null;
+        }
+      }
       }
     }
 
@@ -258,7 +264,7 @@ Collision alienShot() {
   Collision shot; //for return
   for (int i=0; i<alienCol; i++) {
     for (int j=0; j<alienRow; j++) {
-      if (alien[i][j] != null) {
+      if (alien[i][j] != null && !alien[i][j].dying) {
         //Goes through each alien that is not null
         //If distance between the bullet and an alien is less then 20 pixels
         if (bullet.pos.dist(alien[i][j].pos) < 20) {

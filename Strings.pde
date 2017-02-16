@@ -1,4 +1,4 @@
-String title = "SPACE INVADERZ";
+String title = "TRIPPY WARZ";
 String playGameText = "PLAY GAME";
 String scoresText = "SCORES";
 String exitText = "EXIT";

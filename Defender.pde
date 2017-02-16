@@ -7,7 +7,7 @@ class Defender {
   }
   
   void render() {
-    fill(255,0,255);
+    fill(random(255),random(255),random(255));
     rect(pos.x-20,pos.y-20,40,40);
   }
   
