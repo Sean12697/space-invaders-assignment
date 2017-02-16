@@ -1,6 +1,7 @@
 //Global Customisable Declarations //<>//
 final int alienCol = 10;
 final int alienRow = 3;
+final int loadingTime = 4000;
 
 //Global Declarations
 PVector fixedPos;
@@ -12,6 +13,10 @@ boolean moveRight = true;
 int aliensLeft = 0;
 int rowMin = 0;
 int rowMax = 0;
+PImage splash;
+
+//Font
+PFont openSans;
 
 //Game
 int level = 1;
@@ -22,18 +27,27 @@ int lives = 3;
 Defender player;
 Bullet bullet;
 Alien[][] alien = new Alien[alienCol][alienRow]; //Array
-Explosion[] explosions = new Explosion[10];
 
 void setup() {
   size(1000, 800);
+  splash = loadImage("img/splash.jpg");
+  openSans = loadFont("OpenSansLight-Italic-48.vlw");
 }
 //---------------------------------DRAW----------------------------------
 void draw() {
+  if (millis() < loadingTime){
+    image(splash, 0, 0);
+    textFont(openSans, 20);
+    double loadTime = millis()/(loadingTime/100);
+    String loadText = "Loading Game... " + loadTime + "%";
+    text(loadText, width/2-(textWidth(loadText)/2), height/2 + 100);
+    //textFont();
+  } else {
   background(0);
-
+  
   switch (screen) {
   case 0:
-    splash();
+    menuScreen();
     break;
 
   case 1:
@@ -47,6 +61,7 @@ void draw() {
   case 3:
     exit();
     break;
+  }
   }
 }
 //------------------------------KEY_PRESSED-------------------------------
@@ -74,7 +89,7 @@ void keyPressed() {
   }
 }
 //------------------------------SPASH_SCREEN------------------------------
-void splash() {
+void menuScreen() {
   fill(255);
   textSize(width/10);
   text(title, width/2-(textWidth(title)/2), height/6);

@@ -1,7 +1,6 @@
 class Bullet {
   PVector pos;
-  int vel;
-  int level;
+  int vel, level;
   boolean player;
   
   Bullet(PVector pos, int level, boolean player) {
