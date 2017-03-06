@@ -16,7 +16,7 @@ int rowMax = 0;
 PImage splash, background;
 
 //Font
-PFont openSans;
+PFont openSans, openSansIt;
 
 //Game
 int level = 1;
@@ -32,17 +32,13 @@ void setup() {
   size(1000, 800);
   splash = loadImage("img/splash.jpg");
   background = loadImage("img/background.jpg");
-  openSans = loadFont("OpenSansLight-Italic-48.vlw");
+  openSans = loadFont("OpenSans-48.vlw");
+  openSansIt = loadFont("OpenSansLight-Italic-48.vlw");
 }
 //---------------------------------DRAW----------------------------------
 void draw() {
   if (millis() < loadingTime) {
-    image(splash, 0, 0);
-    textFont(openSans, 20);
-    double loadTime = millis()/(loadingTime/100);
-    String loadText = "Loading Game... " + loadTime + "%";
-    text(loadText, width/2-(textWidth(loadText)/2), height/2 + 100);
-    //textFont();
+    splash();
   } else {
     background(0);
 
@@ -74,10 +70,10 @@ void keyPressed() {
     menu++;
   }
   if (keyCode == LEFT && screen == 1 && gamePlaying == true & player.pos.x -20 > 0) {
-    player.pos.sub(player.vel);
+    player.moveLeft = true;
   }
   if (keyCode == RIGHT && screen == 1 && gamePlaying == true & player.pos.x + 20 < width) {
-    player.pos.add(player.vel);
+    player.moveRight = true;
   }
   if (keyCode == ENTER && screen == 0) {
     screen = menu;
@@ -87,6 +83,15 @@ void keyPressed() {
   }
   if (key == ' ' && bullet == null && screen == 1 && gamePlaying == true) {
     bullet = new Bullet(player.pos, level, true);
+  }
+}
+//----------------------------KEY_RELEASED-----------------------------
+void keyReleased() {
+  if (keyCode == LEFT && screen == 1 && gamePlaying == true & player.pos.x -20 > 0) {
+    player.moveLeft = false;
+  }
+  if (keyCode == RIGHT && screen == 1 && gamePlaying == true & player.pos.x + 20 < width) {
+    player.moveRight = false;
   }
 }
 //------------------------------MAIN_MENU------------------------------
@@ -158,7 +163,7 @@ void mainGame() {
         bullet = null;
         if (alien[shot.i][shot.j].health <= 0) {
           alien[shot.i][shot.j].dying = true;
-          score += 10;
+          score += 10 + (10*floor(level/5)); //Gives 10 score first 5 levels, then 10 more each 5 levels, level 10 = +20
         }
       } else {
         bullet.update();
@@ -170,12 +175,12 @@ void mainGame() {
       for (int j=0; j<alienRow; j++) {
 
         if (alien[i][j] != null && !alien[i][j].dead) { //If Alien at index exists
-          
+
           int r = round(random(100)); // 1:100 chance dodge at level 1, 1:1 at level 100
           if (bullet != null && level > r) {
             alien[i][j].avoidBullet();
           }
-          
+
           alien[i][j].render(fixedPos);
           aliensLeft++; //States the array is not empty
           if (i + 1 < rowMin) { 
@@ -227,18 +232,10 @@ void mainGame() {
       fixedPos.add(0, 10);
     }
     if (moveRight == true) {
-      //if (aliensLeft < 5) {
-      //fixedPos.add(level+(aliensLeft-5), 0);
-      //} else {
       fixedPos.add(move, 0);
-      //}
     }
     if (moveRight == false) {
-      //if (aliensLeft < 5) {
-      //fixedPos.sub(level+(aliensLeft-5), 0);
-      //} else {
       fixedPos.sub(move, 0);
-      //}
     }
 
     //Increase Level
@@ -284,6 +281,16 @@ Collision alienShot() {
     }
   }
   return shot = new Collision(false, 0, 0);
+}
+
+//------------------------------SPLASH_SCREEN-----------------------------
+void splash() {
+  image(splash, 0, 0);
+  textFont(openSansIt, 20);
+  double loadTime = millis()/(loadingTime/100);
+  String loadText = "Loading Game... " + loadTime + "%";
+  text(loadText, width/2-(textWidth(loadText)/2), height/2 + 100);
+  textFont(openSans, 20);
 }
 //---------------------------------SCORE----------------------------------
 void scores() {
