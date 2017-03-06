@@ -2,13 +2,14 @@ class Alien {
   PVector relPos, pos;
   Boolean dying, dead;
   int deathCounter, counter;
+  float health, healthMax;
   PImage[] seq = new PImage[4];
   PImage[] death = new PImage[12];
 
   Bullet missile;
 
   Alien(int i, int j, PVector fixedPos) {
-    this.relPos = new PVector(i*60, j*50);
+    this.relPos = new PVector(i*60, j*60);
     PVector fp = fixedPos.copy();
     this.pos = fp.add(relPos);
     this.missile = null;
@@ -22,13 +23,19 @@ class Alien {
     dead = false;
     deathCounter = 0;
     counter = 1;
+    health = (level*2)+30; //30
+    healthMax = new Float(health);
   }
 
   void render(PVector fixedPos) {
-    if (dying == false) {
       PVector fp = fixedPos.copy();
       this.pos = fp.add(relPos);
+    if (dying == false) {
       image(seq[floor(counter/5)], pos.x - 20, pos.y - 20);
+      stroke(255);
+      line(pos.x - 20, pos.y - 25, pos.x + 20, pos.y - 25);
+      stroke(255, 0, 0);
+      line(pos.x - 20, pos.y - 25, pos.x + (((health/healthMax)*40)-20), pos.y - 25);
       counter++;
       if (counter >= 19) {
         counter = 1;

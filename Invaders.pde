@@ -89,7 +89,7 @@ void keyPressed() {
     bullet = new Bullet(player.pos, level, true);
   }
 }
-//------------------------------SPASH_SCREEN------------------------------
+//------------------------------MAIN_MENU------------------------------
 void menuScreen() {
   fill(255);
   textSize(width/10);
@@ -154,9 +154,12 @@ void mainGame() {
       if (bullet.pos.y <= 0) {
         bullet = null;
       } else if (shot.crash == true) {
+        alien[shot.i][shot.j].health -= 40;
         bullet = null;
-        alien[shot.i][shot.j].dying = true;
-        score += 10;
+        if (alien[shot.i][shot.j].health <= 0) {
+          alien[shot.i][shot.j].dying = true;
+          score += 10;
+        }
       } else {
         bullet.update();
       }
@@ -198,10 +201,10 @@ void mainGame() {
           }
         }
         if (alien[i][j] != null) {
-        if (alien[i][j].dead) {
-          alien[i][j] = null;
+          if (alien[i][j].dead) {
+            alien[i][j] = null;
+          }
         }
-      }
       }
     }
 
