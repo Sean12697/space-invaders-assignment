@@ -1,12 +1,14 @@
 class Defender {
   PVector pos, vel;
   boolean moveLeft, moveRight;
+  int damage;
 
   Defender() {
     pos = new PVector(width/2, height-50);
     vel = new PVector (5, 0);
     moveLeft = false;
     moveRight = false;
+    damage = 40; //40
   }
 
   void render() {

@@ -1,12 +1,12 @@
 //Global Customisable Declarations //<>//
 final int alienCol = 10;
 final int alienRow = 3;
-final int loadingTime = 3000;
+final int loadingTime = 3; //3000 = 3 seconds
 
 //Global Declarations
 PVector fixedPos;
 int screen = 0;
-boolean gamePlaying = true;
+boolean gamePlaying = true; //true
 boolean setup = true;
 int menu = 1;
 boolean moveRight = true;
@@ -14,6 +14,7 @@ int aliensLeft = 0;
 int rowMin = 0;
 int rowMax = 0;
 PImage splash, background;
+StringBuilder name = new StringBuilder("");
 
 //Font
 PFont openSans, openSansIt;
@@ -75,7 +76,7 @@ void keyPressed() {
   if (keyCode == RIGHT && screen == 1 && gamePlaying == true) {
     player.moveRight = true;
   }
-  if (keyCode == ENTER && screen == 0) {
+  if ((keyCode == ENTER || keyCode == RETURN) && screen == 0) { //Return for Mac' compatability
     screen = menu;
   }
   if (key == ' ' && screen == 2) {
@@ -83,6 +84,19 @@ void keyPressed() {
   }
   if (key == ' ' && bullet == null && screen == 1 && gamePlaying == true) {
     bullet = new Bullet(player.pos, level, true);
+  }
+  if ((key != keyCode || keyCode == SHIFT) && screen == 1 && gamePlaying == false && name.length() < 20) { //if on game and has ended
+    name.append(key);
+  }
+  if (keyCode == BACKSPACE && name.length() > 0 && screen == 1 && gamePlaying == false) {
+    name.setLength(name.length()-1);
+  }
+  if (key == ' ' && name.length() != 0 && screen == 1 && gamePlaying == false) {
+    if (score > getLowestScore()) {
+      addToScores();
+    }
+    gamePlaying = true;
+    screen = 0;
   }
 }
 //----------------------------KEY_RELEASED-----------------------------
@@ -131,6 +145,7 @@ void mainGame() {
     rowMin = 1;
     rowMax = 10;
 
+    name = new StringBuilder("");
     player = new Defender();
 
     for (int i=0; i<alienCol; i++) {
@@ -159,7 +174,7 @@ void mainGame() {
       if (bullet.pos.y <= 0) {
         bullet = null;
       } else if (shot.crash == true) {
-        alien[shot.i][shot.j].health -= 40;
+        alien[shot.i][shot.j].health -= player.damage;
         bullet = null;
         if (alien[shot.i][shot.j].health <= 0) {
           alien[shot.i][shot.j].dying = true;
@@ -255,14 +270,57 @@ void mainGame() {
     if (lives <= 0 || fixedPos.y + 180 > height - 70) {
       gamePlaying = false;
       setup = true;
+      scoreText = "You won with a score of " + score;
     }
   }
 
   //------------------GAME_ENDED-----------------------
   if (gamePlaying == false) {
-    fill(255);
-    textSize(width/10);
-    text("Game ended!", width/2-(textWidth("Game ended!")/2), height/6);
+    endGame();
+  }
+}
+
+//-------------------------------END_OF_GAME------------------------------
+void endGame() {
+  fill(255);
+  textSize(width/10);
+  text(gameEnd, width/2-(textWidth(gameEnd)/2), height/6);
+  textSize(width/30);
+  text(scoreText, width/2-(textWidth(scoreText)/2), (height/12)*3);
+  if (score > getLowestScore()) { //if the players score is greater than the last score in the array
+    getUserInput();
+  }
+  text(enterToCont, width/2-(textWidth(enterToCont)/2), (height/6)*5);
+}
+//------------------------------GET_USER_INPUT----------------------------
+void getUserInput() {
+  text(enterName, width/2-(textWidth(enterName)/2), (height/12)*4);
+  String n = name.toString();
+  text(n, width/2-(textWidth(n)/2), height/2);
+}
+//---------------------------ADD_SCORE_TO_SCORES--------------------------
+void addToScores() {
+  JSONArray scores = loadJSONArray("scores.json");
+  sortScores(scores);
+  saveJSONArray(scores, "scores.json");
+}
+//---------------------GET_LAST_SCORE_IN_SCORES_RECORDS-------------------
+int getLowestScore() {
+  JSONArray scores = loadJSONArray("scores.json");
+  return scores.getJSONObject(scores.size()-1).getInt("score");
+}
+//-------------------------------SORT_SCORES------------------------------
+//NEEDS FIXING
+void sortScores(JSONArray scores) {
+  JSONObject x;
+  for (int i = 0; i < scores.size(); i++) {
+    JSONObject currentScore = scores.getJSONObject(i);
+    if (score > currentScore.getInt("score")) {
+      x = currentScore;
+      String n = name.toString();
+      currentScore.setString("name", n);
+      currentScore.setInt("score", score);
+    }
   }
 }
 //-----------------------------ALIEN_SHOT_FUN()---------------------------
@@ -300,7 +358,15 @@ void scores() {
 
   textSize(width/30);
   fill(255);
-  //Scores
+
+  JSONArray scores = loadJSONArray("scores.json");
+
+  for (int i = 0; i < scores.size(); i++) {
+    JSONObject currentScore = scores.getJSONObject(i);
+    String playersName = currentScore.getString("name");
+    int playersScore = currentScore.getInt("score");
+    text(playersName + "..... " + playersScore, 50, (height/15)*(4 + i));
+  }
 
   text(quitScores, width/2-(textWidth(quitScores)/2), (height/15)*14);
 }

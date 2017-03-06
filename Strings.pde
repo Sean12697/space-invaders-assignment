@@ -4,3 +4,7 @@ String scoresText = "SCORES";
 String exitText = "EXIT";
 String topScoresText = "TOP 10 SCORES";
 String quitScores = "PRESS SPACE TO EXIT SCORES";
+String gameEnd = "Game ended!" ;
+String enterName = "Please enter your name: ";
+String enterToCont = "Press space exit!";
+String scoreText = "You won a score of PLACEHOLDER";
