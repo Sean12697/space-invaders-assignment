@@ -170,6 +170,12 @@ void mainGame() {
       for (int j=0; j<alienRow; j++) {
 
         if (alien[i][j] != null && !alien[i][j].dead) { //If Alien at index exists
+          
+          int r = round(random(100)); // 1:100 chance dodge at level 1, 1:1 at level 100
+          if (bullet != null && level > r) {
+            alien[i][j].avoidBullet();
+          }
+          
           alien[i][j].render(fixedPos);
           aliensLeft++; //States the array is not empty
           if (i + 1 < rowMin) { 

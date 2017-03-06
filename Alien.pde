@@ -1,18 +1,17 @@
 class Alien {
-  PVector relPos, pos;
+  PVector relPos, pos, offset;
   Boolean dying, dead;
   int deathCounter, counter;
   float health, healthMax;
   PImage[] seq = new PImage[4];
   PImage[] death = new PImage[12];
-
   Bullet missile;
 
   Alien(int i, int j, PVector fixedPos) {
-    this.relPos = new PVector(i*60, j*60);
-    PVector fp = fixedPos.copy();
-    this.pos = fp.add(relPos);
-    this.missile = null;
+    relPos = new PVector(i*60, j*60);
+    offset = new PVector(0, 0);
+    calPos(fixedPos);
+    missile = null;
     for (int n = 0; n < seq.length; n++) {
       seq[n] = loadImage("img/alien_seq" + (n + 1) + ".png");
     }
@@ -23,15 +22,18 @@ class Alien {
     dead = false;
     deathCounter = 0;
     counter = 1;
-    health = (level*2)+30; //30
+    health = (level*2)+150; //30
     healthMax = new Float(health);
   }
 
   void render(PVector fixedPos) {
-      PVector fp = fixedPos.copy();
-      this.pos = fp.add(relPos);
+    calPos(fixedPos);
     if (dying == false) {
+      float t = 255 - map(health/healthMax, 0, 1, 0, 255);
+      //if (health != healthMax) { tint(t, 255, 255); } 
+      tint(t, t - 255, t - 255);
       image(seq[floor(counter/5)], pos.x - 20, pos.y - 20);
+      noTint();
       stroke(255);
       line(pos.x - 20, pos.y - 25, pos.x + 20, pos.y - 25);
       stroke(255, 0, 0);
@@ -50,12 +52,40 @@ class Alien {
     }
   }
 
+  void calPos(PVector fixedPos) {
+    PVector fp = fixedPos.copy();
+    pos = fp.add(relPos);
+    PVector pc = pos.copy();
+    pos = pc.add(offset);
+  }
+
   void randomShoot(int level) {
-    //Level 1 = 1:1000
-    //Level 10 = 1:100
-    int i = floor(random(100*(11-level)));
+    //Level 1 = 1:2000
+    //Level 10 = 1:200
+    int i = floor(random(200*(11-level)));
     if (i == 1) {
       missile = new Bullet(pos, level, false);
     }
   }
+  
+  void avoidBullet() {
+    if(bulletNear()) {
+      offset.x = 0;
+      offset.x += bulletX();
+    }
+  }
+  
+  float bulletX() {
+    float dist = pos.x - bullet.pos.x;
+    if (dist > 1) { return 10; }
+    if (dist < 1) { return -10; }
+    else { return 0; }
+  }
+  
+  boolean bulletNear() {
+    if (bullet.pos.dist(pos) < 30) {
+      return true;
+    } return false;
+  }
+  
 }
