@@ -69,10 +69,10 @@ void keyPressed() {
   if (keyCode == DOWN && screen == 0 && menu < 3) {
     menu++;
   }
-  if (keyCode == LEFT && screen == 1 && gamePlaying == true & player.pos.x -20 > 0) {
+  if (keyCode == LEFT && screen == 1 && gamePlaying == true) {
     player.moveLeft = true;
   }
-  if (keyCode == RIGHT && screen == 1 && gamePlaying == true & player.pos.x + 20 < width) {
+  if (keyCode == RIGHT && screen == 1 && gamePlaying == true) {
     player.moveRight = true;
   }
   if (keyCode == ENTER && screen == 0) {
@@ -87,10 +87,10 @@ void keyPressed() {
 }
 //----------------------------KEY_RELEASED-----------------------------
 void keyReleased() {
-  if (keyCode == LEFT && screen == 1 && gamePlaying == true & player.pos.x -20 > 0) {
+  if (keyCode == LEFT && screen == 1 && gamePlaying == true) {
     player.moveLeft = false;
   }
-  if (keyCode == RIGHT && screen == 1 && gamePlaying == true & player.pos.x + 20 < width) {
+  if (keyCode == RIGHT && screen == 1 && gamePlaying == true) {
     player.moveRight = false;
   }
 }

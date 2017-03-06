@@ -16,10 +16,10 @@ class Defender {
   }
 
   void movement() {
-    if (moveLeft) {
+    if (moveLeft && player.pos.x -20 > 0) {
       player.pos.sub(player.vel);
     }
-    if (moveRight) {
+    if (moveRight && player.pos.x + 20 < width) {
       player.pos.add(player.vel);
     }
   }
