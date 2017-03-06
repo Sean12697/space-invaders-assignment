@@ -220,9 +220,9 @@ void mainGame() {
     }
 
     //Moves Alien Grid
-    float move = ((level-1)*0.5)+1; 
-    //Level 1 = 1 (0 * 0.5 = 0 + 1 = 1)
-    //Level 2 = 1.5 (1 * 0.5 = 0.5 + 1 = 1.5)
+    float move = ((level-1)*0.1)+1; 
+    //Level 1 = 1 (0 * 0.1 = 0 + 1 = 1)
+    //Level 2 = 1.5 (1 * 0.1 = 0.1 + 1 = 1.1)
     if ((fixedPos.x + (rowMin*60)) - 100 < 0) {
       moveRight = true;
       fixedPos.add(0, 10);

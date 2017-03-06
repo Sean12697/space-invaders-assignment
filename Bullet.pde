@@ -1,6 +1,7 @@
 class Bullet {
   PVector pos;
-  int vel, level;
+  float vel;
+  int level;
   boolean player;
 
   Bullet(PVector pos, int level, boolean player) {
@@ -10,7 +11,7 @@ class Bullet {
       this.vel = 20;
     }
     if (this.player == false) { 
-      this.vel = (level*2)+5;
+      this.vel = (level*0.1)+5;
     } //Allows leveling
   }
 
