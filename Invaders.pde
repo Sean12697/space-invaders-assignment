@@ -1,7 +1,7 @@
 //Global Customisable Declarations //<>//
 final int alienCol = 10;
 final int alienRow = 3;
-final int loadingTime = 3; //3000 = 3 seconds
+final int loadingTime = 3000; //3000 = 3 seconds
 
 //Global Declarations
 PVector fixedPos;
@@ -143,9 +143,8 @@ void mainGame() {
     moveRight = true;
 
     lives = 3;
-    level = 40;
+    level = 11; //Debug levels
     score = 0;
-    name = new StringBuilder("");
     rowMin = 1;
     rowMax = 10;
 
@@ -301,7 +300,6 @@ void getUserInput() {
   text(enterName, width/2-(textWidth(enterName)/2), (height/12)*4);
   String n = name.toString();
   text(n, width/2-(textWidth(n)/2), height/2);
-  
 }
 //---------------------------ADD_SCORE_TO_SCORES--------------------------
 void addToScores() {
@@ -325,13 +323,38 @@ void appendScore(JSONArray scores) {
 }
 //-------------------------------SORT_SCORES------------------------------
 void sortScores(JSONArray scores) {
-  
+  boolean Swapped;
+  do
+  {
+    Swapped = false;
+    int n = scores.size();
+    for (int i=0; i < n-1; i++)
+    {
+      //if (Words.get(i).compareToIgnoreCase(Words.get(i+1)) > 0)
+      if (scores.getJSONObject(i).getInt("score") < scores.getJSONObject(i+1).getInt("score"))
+      {
+        //String Temp = Words.get(i);
+        //Words.set(i, Words.get(i+1));
+        //Words.set(i+1, Temp);
+        JSONObject Temp = new JSONObject(); // = scores.getJSONObject(i);
+        Temp.setString("name", scores.getJSONObject(i).getString("name"));
+        Temp.setInt("score", scores.getJSONObject(i).getInt("score"));
+        scores.getJSONObject(i).setString("name", scores.getJSONObject(i+1).getString("name"));
+        scores.getJSONObject(i).setInt("score", scores.getJSONObject(i+1).getInt("score"));
+        scores.getJSONObject(i+1).setString("name", Temp.getString("name"));
+        scores.getJSONObject(i+1).setInt("score", Temp.getInt("score"));
+        Swapped = true;
+      }
+    }
+    n -= 1;
+  } 
+  while (Swapped);
 }
 //---------------------------LIMIT_ARRAY_OF_SCORES------------------------
 void limitScores(JSONArray scores) {
   sortScores(scores);
   int limit = 10;
-  while(scores.size() > limit) {
+  while (scores.size() > limit) {
     scores.remove(scores.size()-1);
   }
 }

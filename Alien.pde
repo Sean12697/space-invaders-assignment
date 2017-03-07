@@ -28,13 +28,13 @@ class Alien {
 
   void render(PVector fixedPos) {
     calPos(fixedPos);
-    if (dying == false) {
+    if (!dying) { //if in a not dying state
       renderAlienNormal();
       if (counter >= 19) {
         counter = 1;
       }
     }
-    if (dying == true) {
+    if (dying) {
       tint(255);
       image(death[floor(deathCounter/5)], pos.x - 20, pos.y - 20);
       noTint();
