@@ -1,18 +1,22 @@
 [
-    {
-        "name": "paul",
-        "score": 457
-   },
-    {
-        "name": "bob",
-        "score": 354
-   },
-    {
-        "name": "harry",
-        "score": 3454
-   },
-    {
-        "name": "loser",
-        "score": 4
-   }
- ]
+  {
+    "score": 999999999,
+    "name": "Sean"
+  },
+  {
+    "score": 354,
+    "name": "bob"
+  },
+  {
+    "score": 3454,
+    "name": "charley"
+  },
+  {
+    "score": 52,
+    "name": "loser"
+  },
+  {
+    "score": 7,
+    "name": "Bob"
+  }
+]

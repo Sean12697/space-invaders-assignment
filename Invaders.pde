@@ -91,10 +91,12 @@ void keyPressed() {
   if (keyCode == BACKSPACE && name.length() > 0 && screen == 1 && gamePlaying == false) {
     name.setLength(name.length()-1);
   }
-  if (key == ' ' && name.length() != 0 && screen == 1 && gamePlaying == false) {
-    if (score > getLowestScore()) {
-      addToScores();
-    }
+  if (key == ' ' && !(score > getLowestScore()) && screen == 1 && gamePlaying == false) {
+    gamePlaying = true;
+    screen = 0;
+  }
+  if (key == ' ' && score > getLowestScore() && name.length() != 0 && screen == 1 && gamePlaying == false) {
+    addToScores();
     gamePlaying = true;
     screen = 0;
   }
@@ -135,13 +137,15 @@ void menuScreen() {
 void mainGame() {
   image(background, 0, 0);
   //----------------------SETUP-----------------------
-  if (setup == true) {
+  if (setup == true && gamePlaying == true) {
 
     fixedPos = new PVector(50, 60);
     moveRight = true;
 
     lives = 3;
-    level = 1;
+    level = 40;
+    score = 0;
+    name = new StringBuilder("");
     rowMin = 1;
     rowMax = 10;
 
@@ -297,30 +301,38 @@ void getUserInput() {
   text(enterName, width/2-(textWidth(enterName)/2), (height/12)*4);
   String n = name.toString();
   text(n, width/2-(textWidth(n)/2), height/2);
+  
 }
 //---------------------------ADD_SCORE_TO_SCORES--------------------------
 void addToScores() {
   JSONArray scores = loadJSONArray("scores.json");
-  sortScores(scores);
-  saveJSONArray(scores, "scores.json");
+  appendScore(scores);
+  limitScores(scores);
+  saveJSONArray(scores, "data/scores.json");
 }
 //---------------------GET_LAST_SCORE_IN_SCORES_RECORDS-------------------
 int getLowestScore() {
   JSONArray scores = loadJSONArray("scores.json");
+  sortScores(scores);
   return scores.getJSONObject(scores.size()-1).getInt("score");
 }
+//-------------------------------APPEND_SCORE-----------------------------
+void appendScore(JSONArray scores) {
+  JSONObject objScore = new JSONObject();
+  objScore.setString("name", name.toString());
+  objScore.setInt("score", score);
+  scores.append(objScore);
+}
 //-------------------------------SORT_SCORES------------------------------
-//NEEDS FIXING
 void sortScores(JSONArray scores) {
-  JSONObject x;
-  for (int i = 0; i < scores.size(); i++) {
-    JSONObject currentScore = scores.getJSONObject(i);
-    if (score > currentScore.getInt("score")) {
-      x = currentScore;
-      String n = name.toString();
-      currentScore.setString("name", n);
-      currentScore.setInt("score", score);
-    }
+  
+}
+//---------------------------LIMIT_ARRAY_OF_SCORES------------------------
+void limitScores(JSONArray scores) {
+  sortScores(scores);
+  int limit = 10;
+  while(scores.size() > limit) {
+    scores.remove(scores.size()-1);
   }
 }
 //-----------------------------ALIEN_SHOT_FUN()---------------------------
