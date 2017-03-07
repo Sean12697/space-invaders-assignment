@@ -91,11 +91,11 @@ void keyPressed() {
   if (keyCode == BACKSPACE && name.length() > 0 && screen == 1 && gamePlaying == false) {
     name.setLength(name.length()-1);
   }
-  if (key == ' ' && !(score > getLowestScore()) && screen == 1 && gamePlaying == false) {
+  if (key == ' ' && !(score > getLowestScore() || scoreLength() < 10) && screen == 1 && gamePlaying == false) {
     gamePlaying = true;
     screen = 0;
   }
-  if (key == ' ' && score > getLowestScore() && name.length() != 0 && screen == 1 && gamePlaying == false) {
+  if (key == ' ' && (score > getLowestScore() || scoreLength() < 10) && name.length() != 0 && screen == 1 && gamePlaying == false) {
     addToScores();
     gamePlaying = true;
     screen = 0;
@@ -290,10 +290,15 @@ void endGame() {
   text(gameEnd, width/2-(textWidth(gameEnd)/2), height/6);
   textSize(width/30);
   text(scoreText, width/2-(textWidth(scoreText)/2), (height/12)*3);
-  if (score > getLowestScore()) { //if the players score is greater than the last score in the array
+  if (score > getLowestScore() || scoreLength() < 10) { //if the players score is greater than the last score in the array
     getUserInput();
   }
   text(enterToCont, width/2-(textWidth(enterToCont)/2), (height/6)*5);
+}
+//-----------------------------LENGTH_OF_SCORES---------------------------
+int scoreLength() {
+  JSONArray scores = loadJSONArray("scores.json");
+  return scores.size();
 }
 //------------------------------GET_USER_INPUT----------------------------
 void getUserInput() {
