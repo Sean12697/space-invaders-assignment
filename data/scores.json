@@ -1,5 +1,13 @@
 [
   {
+    "score": 2730,
+    "name": "winnersean"
+  },
+  {
+    "score": 1080,
+    "name": "testingsean"
+  },
+  {
     "score": 510,
     "name": "seanwinner"
   },
@@ -22,5 +30,9 @@
   {
     "score": 6,
     "name": "Harry"
+  },
+  {
+    "score": 0,
+    "name": "loser"
   }
 ]

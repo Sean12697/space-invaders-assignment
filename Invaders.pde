@@ -211,7 +211,7 @@ void mainGame() {
           if (alien[i][j].missile != null) { //If alien has a shot missile
             alien[i][j].missile.update(); //Update bullet
 
-            if (alien[i][j].missile.pos.y > height) { //Tests bullets position
+            if (alien[i][j].missile.pos.y > height) { //tests bullets position
               alien[i][j].missile = null;
             } else if (alien[i][j].missile.pos.dist(player.pos) < 20) { //If player shot
               alien[i][j].missile = null;
@@ -394,19 +394,26 @@ void splash() {
 void scores() {
   fill(255);
   textSize(width/10);
-  text(topScoresText, width/2-(textWidth(topScoresText)/2), height/6);
+  text(topScoresText, width/2-(textWidth(topScoresText)/2), height/8);
 
   textSize(width/30);
   fill(255);
 
   JSONArray scores = loadJSONArray("scores.json");
-
+  fill(0,255,0);
+  //text("#\t\tPlayer\t\t\tScore", 50, (height/15)*3); //Tabs not working
+  text("#", width/20, (height/15)*3);
+  text("Name", width/10, (height/15)*3);
+  text("Scores", width-(width/5), (height/15)*3);
+  fill(255);
   for (int i = 0; i < scores.size(); i++) {
     JSONObject currentScore = scores.getJSONObject(i);
     String playersName = currentScore.getString("name");
     int playersScore = currentScore.getInt("score");
-    text(playersName + "..... " + playersScore, 50, (height/15)*(4 + i));
+    //text((i + 1) + "\t\t" + playersName + "\t\t\t" + playersScore, 50, (height/15)*(4 + i));
+    text((i + 1), width/20, (height/15)*(4 + i));
+    text(playersName, width/10, (height/15)*(4 + i));
+    text(playersScore, width-(width/5), (height/15)*(4 + i));
   }
-
   text(quitScores, width/2-(textWidth(quitScores)/2), (height/15)*14);
 }
