@@ -25,6 +25,10 @@ class Alien {
     health = (level*2)+30; //30 (increase to debug)
     healthMax = new Float(health);
   }
+  
+  Alien() {
+   //Blank constructer created to initate a blank alien
+  }
 
   void render(PVector fixedPos) {
     calPos(fixedPos);
@@ -68,7 +72,7 @@ class Alien {
     //Level 10 = 1:500
     int i = floor(random(5000/level));
     if (i == 1) {
-      missile = new Bullet(pos, level, false);
+      missile = new Bullet(pos, level, false, false);
     }
   }
 

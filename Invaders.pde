@@ -1,18 +1,10 @@
 //Global Customisable Declarations //<>//
-final int alienCol = 10;
-final int alienRow = 3;
-final int loadingTime = 3000; //3000 = 3 seconds
+final int alienCol = 10, alienRow = 3, loadingTime = 3000; //3000 = 3 seconds
 
 //Global Declarations
 PVector fixedPos;
-int screen = 0;
-boolean gamePlaying = true; //true
-boolean setup = true;
-int menu = 1;
-boolean moveRight = true;
-int aliensLeft = 0;
-int rowMin = 0;
-int rowMax = 0;
+int screen = 0, menu = 1, aliensLeft = 0, rowMin = 0, rowMax = 0;
+boolean gamePlaying = true, setup = true, moveRight = true;
 PImage splash, background;
 StringBuilder name = new StringBuilder("");
 
@@ -20,9 +12,7 @@ StringBuilder name = new StringBuilder("");
 PFont openSans, openSansIt;
 
 //Game
-int level = 1;
-int score = 0;
-int lives = 3;
+int level = 1, score = 0, lives = 3, bulletsShot = 0;
 
 //Object Declarations
 Defender player;
@@ -83,7 +73,8 @@ void keyPressed() {
     screen = 0;
   }
   if (key == ' ' && bullet == null && screen == 1 && gamePlaying == true) {
-    bullet = new Bullet(player.pos, level, true);
+    bulletsShot++;
+    bullet = new Bullet(player.pos, level, true, (bulletsShot % 10 == 0)); //50 for ever 50 bullets make a tracking bullet
   }
   if ((key != keyCode || keyCode == SHIFT) && screen == 1 && gamePlaying == false && name.length() < 20) { //if on game and has ended
     name.append(key);
@@ -143,10 +134,11 @@ void mainGame() {
     moveRight = true;
 
     lives = 3;
-    level = 11; //Debug levels
+    level = 1; //Debug levels
     score = 0;
     rowMin = 1;
     rowMax = 10;
+    bulletsShot = 0;
 
     name = new StringBuilder("");
     player = new Defender();
@@ -400,7 +392,7 @@ void scores() {
   fill(255);
 
   JSONArray scores = loadJSONArray("scores.json");
-  fill(0,255,0);
+  fill(0, 255, 0);
   //text("#\t\tPlayer\t\t\tScore", 50, (height/15)*3); //Tabs not working
   text("#", width/20, (height/15)*3);
   text("Name", width/10, (height/15)*3);

@@ -8,4 +8,13 @@ class Collision {
    this.i = i;
    this.j = j;
   }
+  
+  Collision (int i, int j) {
+   this.i = i;
+   this.j = j;
+  }
+  
+  Collision () {
+   //Blank constructer created to initate a blank
+  }
 }
