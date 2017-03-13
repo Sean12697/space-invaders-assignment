@@ -25,9 +25,9 @@ class Alien {
     health = (level*2)+30; //30 (increase to debug)
     healthMax = new Float(health);
   }
-  
+
   Alien() {
-   //Blank constructer created to initate a blank alien
+    //Blank constructer created to initate a blank alien
   }
 
   void render(PVector fixedPos) {
@@ -39,9 +39,7 @@ class Alien {
       }
     }
     if (dying) {
-      tint(255);
       image(death[floor(deathCounter/5)], pos.x - 20, pos.y - 20);
-      noTint();
       deathCounter++;
       if (deathCounter >= 59) {
         dead = true;

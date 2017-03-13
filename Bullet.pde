@@ -9,7 +9,7 @@ class Bullet {
     this.player = player;
     this.tracking = tracking;
     if (this.player == true) { 
-      this.vel = new PVector(0, 20);
+      this.vel = new PVector(0, -20);
       if (this.tracking) {
         this.nearestAlien = this.getNearestAlienIndex();
       }
@@ -20,38 +20,45 @@ class Bullet {
   }
 
   void render() {
-    if (player == true) {
-      fill(0, 255, 255);
+    if (tracking) {
+      fill(0, 255, 0);
       ellipse(pos.x, pos.y, 10, 10);
-    }
-    if (player == false) {
-      fill(255, 0, 0);
-      ellipse(pos.x, pos.y, 10, 10);
+    } else {
+      if (player == true) {
+        fill(0, 255, 255);
+        ellipse(pos.x, pos.y, 10, 10);
+      }
+      if (player == false) {
+        fill(255, 0, 0);
+        ellipse(pos.x, pos.y, 10, 10);
+      }
     }
   }
 
   void move() {
-    if (player == true) {
-      if (tracking) {
-        vel.x = xoffAlien();
-      }
-      pos.sub(vel);
-      vel.x = 0;
+    if (tracking && nearestAlien != null) {
+      vel.x = xoffAlien();
     }
-    if (player == false) {
-      pos.add(vel);
-    }
+    pos.add(vel);
+    vel.x = 0;
+  }
+
+  float nearestAlienDist() {
+    return pos.dist(aliens.alien[nearestAlien.i][nearestAlien.j].pos);
   }
 
   float xoffAlien() {
-    if (alien[nearestAlien.i][nearestAlien.j] == null) { //Since a bullet can be shot and then an alien can die before completion
+    Alien alien = aliens.alien[nearestAlien.i][nearestAlien.j];
+    if (alien == null || alien.dying) { //Since a bullet can be shot and then an alien can die before completion
       nearestAlien = getNearestAlienIndex();
     }
-    if (pos.x > alien[nearestAlien.i][nearestAlien.j].pos.x) { //If bullet is right of the alien, move left (negative x)
-      return 5; //Inverted due to vector being subtracted instead of added (since it move up the screen)
-    }
-    if (pos.x < alien[nearestAlien.i][nearestAlien.j].pos.x) { //If bullet is left of the alien, move right (positive x)
-      return -5; //Inverted due to vector being subtracted instead of added (since it move up the screen)
+    if (alien != null) {
+      if (pos.x > alien.pos.x) { //If bullet is right of the alien, move left (negative x)
+        return -(nearestAlienDist()/40); //Moves 1/40 nearer to the alien it is aiming towards
+      }
+      if (pos.x < alien.pos.x) { //If bullet is left of the alien, move right (positive x)
+        return nearestAlienDist()/40;
+      }
     }
     return 0;
   }
@@ -61,10 +68,10 @@ class Bullet {
     float nearestLocationDist = 10000;
     for (int i=0; i<alienCol; i++) {
       for (int j=0; j<alienRow; j++) {
-        if (alien[i][j] != null) {
-          if (pos.dist(alien[i][j].pos) < nearestLocationDist) {
-            nearest = new Collision(i, j);
-            nearestLocationDist = pos.dist(alien[i][j].pos);
+        if (aliens.alien[i][j] != null) {
+          if (pos.dist(aliens.alien[i][j].pos) < nearestLocationDist) {
+            nearest = new Collision(i, j); //used to track an alien, instead of creating a copy with will have a fixed position of when it was copied
+            nearestLocationDist = pos.dist(aliens.alien[i][j].pos);
           }
         }
       }
@@ -73,7 +80,7 @@ class Bullet {
   }
 
   void update() {
-    render();
+    render();  
     move();
   }
 }

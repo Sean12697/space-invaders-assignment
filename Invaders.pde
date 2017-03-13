@@ -1,10 +1,9 @@
 //Global Customisable Declarations //<>//
-final int alienCol = 10, alienRow = 3, loadingTime = 3000; //3000 = 3 seconds
+final int alienCol = 10, alienRow = 3, loadingTime = 3000, eachNthTrackingBullet = 1; //3000 = 3 seconds
 
 //Global Declarations
-PVector fixedPos;
-int screen = 0, menu = 1, aliensLeft = 0, rowMin = 0, rowMax = 0;
-boolean gamePlaying = true, setup = true, moveRight = true;
+int screen = 0, menu = 1;
+boolean gamePlaying = true, setup = true;
 PImage splash, background;
 StringBuilder name = new StringBuilder("");
 
@@ -12,12 +11,12 @@ StringBuilder name = new StringBuilder("");
 PFont openSans, openSansIt;
 
 //Game
-int level = 1, score = 0, lives = 3, bulletsShot = 0;
+int level = 1;
 
 //Object Declarations
 Defender player;
 Bullet bullet;
-Alien[][] alien = new Alien[alienCol][alienRow]; //Array
+AlienGrid aliens;
 
 void setup() {
   size(1000, 800);
@@ -73,8 +72,8 @@ void keyPressed() {
     screen = 0;
   }
   if (key == ' ' && bullet == null && screen == 1 && gamePlaying == true) {
-    bulletsShot++;
-    bullet = new Bullet(player.pos, level, true, (bulletsShot % 10 == 0)); //50 for ever 50 bullets make a tracking bullet
+    player.bulletsShot++;
+    bullet = new Bullet(player.pos, level, true, (player.bulletsShot % eachNthTrackingBullet == 0)); //10 for ever 10 bullets make a tracking bullet
   }
   if ((key != keyCode || keyCode == SHIFT) && screen == 1 && gamePlaying == false && name.length() < 20) { //if on game and has ended
     name.append(key);
@@ -82,14 +81,16 @@ void keyPressed() {
   if (keyCode == BACKSPACE && name.length() > 0 && screen == 1 && gamePlaying == false) {
     name.setLength(name.length()-1);
   }
-  if (key == ' ' && !(score > getLowestScore() || scoreLength() < 10) && screen == 1 && gamePlaying == false) {
-    gamePlaying = true;
-    screen = 0;
-  }
-  if (key == ' ' && (score > getLowestScore() || scoreLength() < 10) && name.length() != 0 && screen == 1 && gamePlaying == false) {
-    addToScores();
-    gamePlaying = true;
-    screen = 0;
+  if (player != null) { //avoids a null pointer exception I had and should only run after game when there is a player
+    if (key == ' ' && !(player.score > getLowestScore() || scoreLength() < 10) && screen == 1 && gamePlaying == false) {
+      gamePlaying = true;
+      screen = 0;
+    }
+    if (key == ' ' && (player.score > getLowestScore() || scoreLength() < 10) && name.length() != 0 && screen == 1 && gamePlaying == false) {
+      addToScores();
+      gamePlaying = true;
+      screen = 0;
+    }
   }
 }
 //----------------------------KEY_RELEASED-----------------------------
@@ -124,30 +125,23 @@ void menuScreen() {
   }
   text(exitText, width/2-(textWidth(exitText)/2), (height/15)*13);
 }
+//-----------------------------SETUP_VARIBLES-----------------------------
+void gameVariblesReset() {
+  level = 1; //Debug levels
+  player.varibleReset();
+  aliens.varibleReset();
+  name = new StringBuilder("");
+}
 //-------------------------------MAIN_GAME--------------------------------
 void mainGame() {
   image(background, 0, 0);
   //----------------------SETUP-----------------------
   if (setup == true && gamePlaying == true) {
 
-    fixedPos = new PVector(50, 60);
-    moveRight = true;
-
-    lives = 3;
-    level = 1; //Debug levels
-    score = 0;
-    rowMin = 1;
-    rowMax = 10;
-    bulletsShot = 0;
-
-    name = new StringBuilder("");
+    aliens = new AlienGrid(alienCol, alienRow);
     player = new Defender();
-
-    for (int i=0; i<alienCol; i++) {
-      for (int j=0; j<alienRow; j++) {
-        alien[i][j] = new Alien(i, j, fixedPos);
-      }
-    }
+    gameVariblesReset();
+    aliens.populateArray();
 
     setup = false;
   }
@@ -156,116 +150,42 @@ void mainGame() {
   if (gamePlaying == true) {
     textSize(width/50);
     fill(255);
-    text("Level: " + level + ",  Lives: " + lives + ",  Score: " + score, 10, 25);
+    text("Level: " + level + ",  Lives: " + player.lives + ",  Score: " + player.score, 10, 25);
 
-    aliensLeft = 0;
-    rowMin = 10;
-    rowMax = 0;
+    aliens.ingameVaribleReset();
     player.render();
 
     //Bullet
     if (bullet != null) {
-      Collision shot = alienShot();
+      Collision shot = aliens.alienShot(bullet);
       if (bullet.pos.y <= 0) {
         bullet = null;
       } else if (shot.crash == true) {
-        alien[shot.i][shot.j].health -= player.damage;
+        aliens.alien[shot.i][shot.j].health -= player.damage;
         bullet = null;
-        if (alien[shot.i][shot.j].health <= 0) {
-          alien[shot.i][shot.j].dying = true;
-          score += 10 + (10*floor(level/5)); //Gives 10 score first 5 levels, then 10 more each 5 levels, level 10 = +20
+        if (aliens.alien[shot.i][shot.j].health <= 0) {
+          aliens.alien[shot.i][shot.j].dying = true;
+          player.score += 10 + (10*floor(level/5)); //Gives 10 score first 5 levels, then 10 more each 5 levels, level 10 = +20
         }
       } else {
         bullet.update();
       }
     }
 
-    //--------Render_Aliens/Bullets--------
-    for (int i=0; i<alienCol; i++) {
-      for (int j=0; j<alienRow; j++) {
-
-        if (alien[i][j] != null && !alien[i][j].dead) { //If Alien at index exists
-
-          int r = round(random(100)); // 1:100 chance dodge at level 1, 1:1 at level 100
-          if (bullet != null && level > r) {
-            alien[i][j].avoidBullet();
-          }
-
-          alien[i][j].render(fixedPos);
-          aliensLeft++; //States the array is not empty
-          if (i + 1 < rowMin) { 
-            rowMin = i + 1;
-          } //Puts the futhest left index as min
-          if (i + 1 > rowMax) { 
-            rowMax = i + 1;
-          } //Puts the futhest right index as max
-
-          if (alien[i][j].missile != null) { //If alien has a shot missile
-            alien[i][j].missile.update(); //Update bullet
-
-            if (alien[i][j].missile.pos.y > height) { //tests bullets position
-              alien[i][j].missile = null;
-            } else if (alien[i][j].missile.pos.dist(player.pos) < 20) { //If player shot
-              alien[i][j].missile = null;
-              player.lostLife();
-              lives--;
-            } 
-
-            if (bullet != null && alien[i][j].missile != null) {
-              if (alien[i][j].missile.pos.dist(bullet.pos) < 12) { //If player bullet and alien bullet hit each other
-                alien[i][j].missile = null;
-                bullet = null;
-              }
-            }
-          } else {
-            alien[i][j].randomShoot(level); //Generate bullet
-          }
-        }
-        if (alien[i][j] != null) {
-          if (alien[i][j].dead) {
-            alien[i][j] = null;
-          }
-        }
-      }
-    }
-
-    //Moves Alien Grid
-    float move = ((level-1)*0.1)+1; 
-    //Level 1 = 1 (0 * 0.1 = 0 + 1 = 1)
-    //Level 2 = 1.5 (1 * 0.1 = 0.1 + 1 = 1.1)
-    if ((fixedPos.x + (rowMin*60)) - 100 < 0) {
-      moveRight = true;
-      fixedPos.add(0, 10);
-    }
-    if (fixedPos.x + (rowMax*60) > width) {
-      moveRight = false;
-      fixedPos.add(0, 10);
-    }
-    if (moveRight == true) {
-      fixedPos.add(move, 0);
-    }
-    if (moveRight == false) {
-      fixedPos.sub(move, 0);
-    }
+    aliens.update(bullet, player);
 
     //Increase Level
-    if (aliensLeft <= 0) {
+    if (aliens.aliensLeft <= 0) {
       level++;
 
-      fixedPos = new PVector(50, 60);
-
-      for (int i=0; i<alienCol; i++) {
-        for (int j=0; j<alienRow; j++) {
-          alien[i][j] = new Alien(i, j, fixedPos);
-        }
-      }
+      aliens.resetAliens();
     }
 
     //---------END_GAME----------
-    if (lives <= 0 || fixedPos.y + 180 > height - 70) {
+    if (player.lives <= 0 || aliens.fixedPos.y + 180 > height - 70) {
       gamePlaying = false;
       setup = true;
-      scoreText = "You won with a score of " + score;
+      scoreText = "You won with a score of " + player.score;
     }
   }
 
@@ -282,7 +202,7 @@ void endGame() {
   text(gameEnd, width/2-(textWidth(gameEnd)/2), height/6);
   textSize(width/30);
   text(scoreText, width/2-(textWidth(scoreText)/2), (height/12)*3);
-  if (score > getLowestScore() || scoreLength() < 10) { //if the players score is greater than the last score in the array
+  if (player.score > getLowestScore() || scoreLength() < 10) { //if the players score is greater than the last score in the array
     getUserInput();
   }
   text(enterToCont, width/2-(textWidth(enterToCont)/2), (height/6)*5);
@@ -315,7 +235,7 @@ int getLowestScore() {
 void appendScore(JSONArray scores) {
   JSONObject objScore = new JSONObject();
   objScore.setString("name", name.toString());
-  objScore.setInt("score", score);
+  objScore.setInt("score", player.score);
   scores.append(objScore);
 }
 //-------------------------------SORT_SCORES------------------------------
@@ -355,24 +275,6 @@ void limitScores(JSONArray scores) {
     scores.remove(scores.size()-1);
   }
 }
-//-----------------------------ALIEN_SHOT_FUN()---------------------------
-Collision alienShot() {
-  Collision shot; //for return
-  for (int i=0; i<alienCol; i++) {
-    for (int j=0; j<alienRow; j++) {
-      if (alien[i][j] != null && !alien[i][j].dying) {
-        //Goes through each alien that is not null
-        //If distance between the bullet and an alien is less then 20 pixels
-        if (bullet.pos.dist(alien[i][j].pos) < 20) {
-          //Say there is a collision and return the alien index
-          return shot = new Collision(true, i, j);
-        }
-      }
-    }
-  }
-  return shot = new Collision(false, 0, 0);
-}
-
 //------------------------------SPLASH_SCREEN-----------------------------
 void splash() {
   image(splash, 0, 0);
