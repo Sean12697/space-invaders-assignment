@@ -5,8 +5,4 @@ class Collision extends twoDimensionArrayIndex {
     super(i, j);
     this.crash = crash;
   }
-
-  Collision (int i, int j) {
-    super(i, j);
-  }
 }

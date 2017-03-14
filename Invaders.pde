@@ -235,6 +235,7 @@ int getLowestScore() {
 void appendScore(JSONArray scores) {
   JSONObject objScore = new JSONObject();
   objScore.setString("name", name.toString());
+  objScore.setInt("level", level);
   objScore.setInt("score", player.score);
   scores.append(objScore);
 }
@@ -255,10 +256,13 @@ void sortScores(JSONArray scores) {
         //Words.set(i+1, Temp);
         JSONObject Temp = new JSONObject(); // = scores.getJSONObject(i);
         Temp.setString("name", scores.getJSONObject(i).getString("name"));
+        Temp.setInt("level", scores.getJSONObject(i).getInt("level"));
         Temp.setInt("score", scores.getJSONObject(i).getInt("score"));
         scores.getJSONObject(i).setString("name", scores.getJSONObject(i+1).getString("name"));
+        scores.getJSONObject(i).setInt("level", scores.getJSONObject(i+1).getInt("level"));
         scores.getJSONObject(i).setInt("score", scores.getJSONObject(i+1).getInt("score"));
         scores.getJSONObject(i+1).setString("name", Temp.getString("name"));
+        scores.getJSONObject(i+1).setInt("level", Temp.getInt("level"));
         scores.getJSONObject(i+1).setInt("score", Temp.getInt("score"));
         Swapped = true;
       }

@@ -70,7 +70,7 @@ class Bullet {
       for (int j=0; j<alienRow; j++) {
         if (aliens.alien[i][j] != null) {
           if (pos.dist(aliens.alien[i][j].pos) < nearestLocationDist) {
-            nearest = new Collision(i, j); //used to track an alien, instead of creating a copy with will have a fixed position of when it was copied
+            nearest = new twoDimensionArrayIndex(i, j); //used to track an alien, instead of creating a copy with will have a fixed position of when it was copied
             nearestLocationDist = pos.dist(aliens.alien[i][j].pos);
           }
         }
