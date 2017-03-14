@@ -298,15 +298,18 @@ void scores() {
   //text("#\t\tPlayer\t\t\tScore", 50, (height/15)*3); //Tabs not working
   text("#", width/20, (height/15)*3);
   text("Name", width/10, (height/15)*3);
+  text("Level", width-(width/3), (height/15)*3);
   text("Scores", width-(width/5), (height/15)*3);
   fill(255);
   for (int i = 0; i < scores.size(); i++) {
     JSONObject currentScore = scores.getJSONObject(i);
     String playersName = currentScore.getString("name");
+    int playersLevel = currentScore.getInt("level");
     int playersScore = currentScore.getInt("score");
     //text((i + 1) + "\t\t" + playersName + "\t\t\t" + playersScore, 50, (height/15)*(4 + i));
     text((i + 1), width/20, (height/15)*(4 + i));
     text(playersName, width/10, (height/15)*(4 + i));
+    text(playersLevel, width-(width/3), (height/15)*(4 + i));
     text(playersScore, width-(width/5), (height/15)*(4 + i));
   }
   text(quitScores, width/2-(textWidth(quitScores)/2), (height/15)*14);

@@ -1,20 +1,12 @@
-class Collision {
+class Collision extends twoDimensionArrayIndex {
   boolean crash;
-  int i;
-  int j;
 
   Collision (boolean crash, int i, int j) {
+    super(i, j);
     this.crash = crash;
-    this.i = i;
-    this.j = j;
   }
 
   Collision (int i, int j) {
-    this.i = i;
-    this.j = j;
-  }
-
-  Collision () {
-    //Blank constructer created to initate a blank
+    super(i, j);
   }
 }

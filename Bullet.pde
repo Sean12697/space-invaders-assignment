@@ -2,7 +2,7 @@ class Bullet {
   PVector pos, vel;
   int level;
   boolean player, tracking;
-  Collision nearestAlien;
+  twoDimensionArrayIndex nearestAlien;
 
   Bullet(PVector pos, int level, boolean player, boolean tracking) {
     this.pos = new PVector(pos.x, pos.y);
@@ -63,8 +63,8 @@ class Bullet {
     return 0;
   }
 
-  Collision getNearestAlienIndex() { //Collision used since it encapulates an i & j (index of an alien)
-    Collision nearest = new Collision();
+  twoDimensionArrayIndex getNearestAlienIndex() { //Collision used since it encapulates an i & j (index of an alien)
+    twoDimensionArrayIndex nearest = null;
     float nearestLocationDist = 10000;
     for (int i=0; i<alienCol; i++) {
       for (int j=0; j<alienRow; j++) {
