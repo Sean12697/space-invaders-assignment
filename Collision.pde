@@ -1,4 +1,4 @@
-class Collision extends twoDimensionArrayIndex {
+class Collision extends twoDimensionArrayIndex { //Inheritance
   boolean crash;
 
   Collision (boolean crash, int i, int j) {

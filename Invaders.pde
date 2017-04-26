@@ -1,5 +1,5 @@
 //Global Customisable Declarations //<>//
-final int alienCol = 10, alienRow = 3, loadingTime = 3000, eachNthTrackingBullet = 1; //3000 = 3 seconds
+final int alienCol = 10, alienRow = 3, loadingTime = 3000, eachNthTrackingBullet = 10; //3000 = 3 seconds
 
 //Global Declarations
 int screen = 0, menu = 1;
@@ -68,24 +68,25 @@ void keyPressed() {
   if ((keyCode == ENTER || keyCode == RETURN) && screen == 0) { //Return for Mac' compatability
     screen = menu;
   }
-  if (key == ' ' && screen == 2) {
+  if (key == ' ' && screen == 2) { //Enables going to main screen from scores
     screen = 0;
   }
   if (key == ' ' && bullet == null && screen == 1 && gamePlaying == true) {
-    player.bulletsShot++;
+    player.bulletsShot++; //Used for dodging bullets
     bullet = new Bullet(player.pos, level, true, (player.bulletsShot % eachNthTrackingBullet == 0)); //10 for ever 10 bullets make a tracking bullet
   }
   if ((key != keyCode || keyCode == SHIFT) && screen == 1 && gamePlaying == false && name.length() < 20) { //if on game and has ended
-    name.append(key);
+    name.append(key); //add user inputted key to name varible
   }
-  if (keyCode == BACKSPACE && name.length() > 0 && screen == 1 && gamePlaying == false) {
-    name.setLength(name.length()-1);
+  if (keyCode == BACKSPACE && name.length() > 0 && screen == 1 && gamePlaying == false) { //If backspace
+    name.setLength(name.length()-1); //Remove last character
   }
   if (player != null) { //avoids a null pointer exception I had and should only run after game when there is a player
     if (key == ' ' && !(player.score > getLowestScore() || scoreLength() < 10) && screen == 1 && gamePlaying == false) {
       gamePlaying = true;
       screen = 0;
     }
+    //Only adds to the score at end game if there's less than 10 scores stored or it's greater than the last one
     if (key == ' ' && (player.score > getLowestScore() || scoreLength() < 10) && name.length() != 0 && screen == 1 && gamePlaying == false) {
       addToScores();
       gamePlaying = true;
@@ -94,6 +95,7 @@ void keyPressed() {
   }
 }
 //----------------------------KEY_RELEASED-----------------------------
+//Enables smooth movement of the player, since it's detecting a different method
 void keyReleased() {
   if (keyCode == LEFT && screen == 1 && gamePlaying == true) {
     player.moveLeft = false;
@@ -150,21 +152,21 @@ void mainGame() {
   if (gamePlaying == true) {
     textSize(width/50);
     fill(255);
-    text("Level: " + level + ",  Lives: " + player.lives + ",  Score: " + player.score, 10, 25);
+    text("Level: " + level + ",  Lives: " + player.lives + ",  Score: " + player.score, 10, 25); //Stats
 
     aliens.ingameVaribleReset();
     player.render();
 
     //Bullet
     if (bullet != null) {
-      Collision shot = aliens.alienShot(bullet);
+      Collision shot = aliens.alienShot(bullet); //Calls alienShot in the Array passing through the bullet
       if (bullet.pos.y <= 0) {
         bullet = null;
       } else if (shot.crash == true) {
-        aliens.alien[shot.i][shot.j].health -= player.damage;
+        aliens.alien[shot.i][shot.j].health -= player.damage; //The players damage is deducted from the alien in the array that has been shot
         bullet = null;
-        if (aliens.alien[shot.i][shot.j].health <= 0) {
-          aliens.alien[shot.i][shot.j].dying = true;
+        if (aliens.alien[shot.i][shot.j].health <= 0) { //If dead
+          aliens.alien[shot.i][shot.j].dying = true; //Trigger death animation
           player.score += 10 + (10*floor(level/5)); //Gives 10 score first 5 levels, then 10 more each 5 levels, level 10 = +20
         }
       } else {
@@ -240,6 +242,7 @@ void appendScore(JSONArray scores) {
   scores.append(objScore);
 }
 //-------------------------------SORT_SCORES------------------------------
+//Bubble Sort algorithm made (by me) for a JSON Array
 void sortScores(JSONArray scores) {
   boolean Swapped;
   do
@@ -248,13 +251,9 @@ void sortScores(JSONArray scores) {
     int n = scores.size();
     for (int i=0; i < n-1; i++)
     {
-      //if (Words.get(i).compareToIgnoreCase(Words.get(i+1)) > 0)
       if (scores.getJSONObject(i).getInt("score") < scores.getJSONObject(i+1).getInt("score"))
       {
-        //String Temp = Words.get(i);
-        //Words.set(i, Words.get(i+1));
-        //Words.set(i+1, Temp);
-        JSONObject Temp = new JSONObject(); // = scores.getJSONObject(i);
+        JSONObject Temp = new JSONObject(); 
         Temp.setString("name", scores.getJSONObject(i).getString("name"));
         Temp.setInt("level", scores.getJSONObject(i).getInt("level"));
         Temp.setInt("score", scores.getJSONObject(i).getInt("score"));
@@ -283,7 +282,7 @@ void limitScores(JSONArray scores) {
 void splash() {
   image(splash, 0, 0);
   textFont(openSansIt, 20);
-  double loadTime = millis()/(loadingTime/100);
+  double loadTime = millis()/(loadingTime/100); //Calculates the persentage from 0-100% from 0 to the load time
   String loadText = "Loading Game... " + loadTime + "%";
   text(loadText, width/2-(textWidth(loadText)/2), height/2 + 100);
   textFont(openSans, 20);
@@ -299,18 +298,18 @@ void scores() {
 
   JSONArray scores = loadJSONArray("scores.json");
   fill(0, 255, 0);
-  //text("#\t\tPlayer\t\t\tScore", 50, (height/15)*3); //Tabs not working
+  //Displayer header
   text("#", width/20, (height/15)*3);
   text("Name", width/10, (height/15)*3);
   text("Level", width-(width/3), (height/15)*3);
   text("Scores", width-(width/5), (height/15)*3);
   fill(255);
+  //Loop over scores, using i to go down the y axies for each score
   for (int i = 0; i < scores.size(); i++) {
     JSONObject currentScore = scores.getJSONObject(i);
     String playersName = currentScore.getString("name");
     int playersLevel = currentScore.getInt("level");
     int playersScore = currentScore.getInt("score");
-    //text((i + 1) + "\t\t" + playersName + "\t\t\t" + playersScore, 50, (height/15)*(4 + i));
     text((i + 1), width/20, (height/15)*(4 + i));
     text(playersName, width/10, (height/15)*(4 + i));
     text(playersLevel, width-(width/3), (height/15)*(4 + i));

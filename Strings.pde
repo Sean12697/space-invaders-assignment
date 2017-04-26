@@ -1,3 +1,4 @@
+//Used to use "text" and "textWidth" to enable centered text, without having to use the text twice (just using a varible stored here)
 String title = "TRIPPY WARZ";
 String playGameText = "PLAY GAME";
 String scoresText = "SCORES";

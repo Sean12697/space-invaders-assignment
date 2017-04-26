@@ -1,0 +1,18 @@
+Changed since the formative submission:
+
+- Added tracking Bullets 
+- Dodging Aliens 
+- Alien health 
+- Alien healthbar
+- Alien tint for health
+- Alien health increases per level
+- Bullets (from Player) do damage (to Alien health)
+- Scores (with bubble sort and JSON) 
+- AlienGrid class (less global variables)
+- Smooth motion of Defender (using key released)
+- Added Open Sans font
+- Leveling adjustments
+- Class encapsulating a 2D array index
+- Collision inherits 2D Array Class
+- gameVariblesReset() procedure
+- Moved chunks of code to Classes

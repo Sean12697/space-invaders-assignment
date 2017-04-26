@@ -40,7 +40,7 @@ class AlienGrid {
       for (int j=0; j<rows; j++) {
 
         if (alien[i][j] != null) { //If Alien at index exists
-          if (!alien[i][j].dead) {
+          if (!alien[i][j].dead) { //If Alien is not dead
             if (bullet != null && level > round(random(100))) { // 1:100 chance dodge at level 1, 1:1 at level 100
               alien[i][j].avoidBullet();
             }
@@ -90,13 +90,13 @@ class AlienGrid {
     float move = ((level-1)*0.1)+1; 
     //Level 1 = 1 (0 * 0.1 = 0 + 1 = 1)
     //Level 2 = 1.5 (1 * 0.1 = 0.1 + 1 = 1.1)
-    if ((fixedPos.x + (rowMin*60)) - 100 < 0) {
+    if ((fixedPos.x + (rowMin*60)) - 100 < 0) { //Hit the left edge (futhest left alien)
       moveRight = true;
-      fixedPos.add(0, 10);
+      fixedPos.add(0, 10); //Moves down
     }
-    if (fixedPos.x + (rowMax*60) > width) {
+    if (fixedPos.x + (rowMax*60) > width) { //Hit the right edge (futhest right alien)
       moveRight = false;
-      fixedPos.add(0, 10);
+      fixedPos.add(0, 10); //Moves down
     }
     if (moveRight == true) {
       fixedPos.add(move, 0);
@@ -114,7 +114,8 @@ class AlienGrid {
           //Goes through each alien that is not null
           //If distance between the bullet and an alien is less then 20 pixels
           if (bullet.pos.dist(alien[i][j].pos) < 20) {
-            //Say there is a collision and return the alien index
+            //------------------------REASON_FOR_COLLISION_CLASS----------------------
+            //Say there is a collision and return the alien index, which is then used
             return shot = new Collision(true, i, j);
           }
         }
